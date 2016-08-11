@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.os.RemoteException;
 import android.util.Log;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import org.altbeacon.beacon.AltBeacon;
 import org.altbeacon.beacon.Beacon;
@@ -20,6 +21,7 @@ import org.altbeacon.beacon.Region;
 public class RangingActivity extends Activity implements BeaconConsumer {
     protected static final String TAG = "RangingActivity";
     private BeaconManager beaconManager = BeaconManager.getInstanceForApplication(this);
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,14 +51,23 @@ public class RangingActivity extends Activity implements BeaconConsumer {
 
     @Override
     public void onBeaconServiceConnect() {
+        final double BUMP_DISTANCE = 0.5;
         beaconManager.setRangeNotifier(new RangeNotifier() {
            @Override
            public void didRangeBeaconsInRegion(Collection<Beacon> beacons, Region region) {
+               for( final Beacon beacon : beacons ) {
+                   if( beacon.getDistance() < BUMP_DISTANCE ){
+                       logToDisplay("BUMP " + beacon.toString());
+                   }
+               }
+
+/*
               if (beacons.size() > 0) {
                  //EditText editText = (EditText)RangingActivity.this.findViewById(R.id.rangingText);
                  Beacon firstBeacon = beacons.iterator().next();
                  logToDisplay("The first beacon " + firstBeacon.toString() + " is about " + firstBeacon.getDistance() + " meters away.");
               }
+*/
            }
 
         });
